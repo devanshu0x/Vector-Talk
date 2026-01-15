@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { ThemeSwitcher } from "./themeSwitcher";
-import { Avatar, AvatarImage } from "./avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Skeleton } from "./skeleton";
@@ -24,6 +24,7 @@ export function Navbar(){
             <ThemeSwitcher/>
             <Avatar className="rounded-lg shadow">
                 <AvatarImage src={user?.image || ""} />
+                <AvatarFallback className="rounded-lg">{user?.name?.charAt(0) ?? "U"}</AvatarFallback>
             </Avatar>
         </div>
     </nav>

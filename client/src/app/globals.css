@@ -132,3 +132,18 @@
     @apply leading-relaxed;
   }
 }
+
+
+  .scrollbar-none {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE & Edge */
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;                /* Chrome, Safari */
+  }
+
+  ::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
