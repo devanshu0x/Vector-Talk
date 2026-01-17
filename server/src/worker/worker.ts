@@ -1,20 +1,9 @@
 import { Worker } from "bullmq";
-import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { QdrantVectorStore } from "@langchain/qdrant";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import "dotenv/config"
 import { PDFParse } from "pdf-parse";
+import { vectorStore } from "../config/langchainConfig.js";
 
-
-const embeddings = new GoogleGenerativeAIEmbeddings({
-  model: "text-embedding-004",
-  apiKey: process.env.GOOGLE_API_KEY!
-});
-
-const vectorStore = await QdrantVectorStore.fromExistingCollection(embeddings, {
-  url: process.env.QDRANT_URL!,
-  collectionName: "pdf-docs",
-});
 
 
 
