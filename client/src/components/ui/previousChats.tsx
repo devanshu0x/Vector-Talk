@@ -2,6 +2,7 @@
 
 import { ChevronRight } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "./pagination";
+import { Badge } from "./badge";
 
 const chats = [
   {
@@ -16,12 +17,12 @@ const chats = [
   },
   {
     title: "Company incorporation checklist",
-    documents: ["Company Act 2013.pdf", "Startup Guide.pdf"],
+    documents: ["Company Act 2013.pdf", "Startup Guide.pdf", "habibi"],
     startDate: new Date("2025-01-10"),
   },
   {
     title: "Employee PF contribution rules",
-    documents: ["PF Rules.pdf", "Payroll Guidelines.pdf"],
+    documents: ["PF Rules.pdf", "Payroll Guidelines.pdf","","",""],
     startDate: new Date("2025-01-12"),
   },
   {
@@ -57,11 +58,30 @@ const chats = [
 ];
 
 
+function trimTitle(title:string,len:number){
+    if(title.length<=len) return title;
+    return title.slice(0,len-3)+"...";
+}
+
+
 export function PreviousChats(){
     return <div className="space-y-3">
         {chats.map((chat)=>(
             <div className="rounded-md border px-4 py-2 font-heading flex justify-between items-center" >
-                {chat.title}
+                <div className="flex flex-col">
+                    {chat.title}
+                
+                <div className=" hidden sm:flex gap-2">
+                    {
+                    chat.documents.slice(0,2).map((doc)=>(
+                        <Badge variant={"secondary"}>{trimTitle(doc,25)}</Badge>
+                    ))
+                    }
+                    {
+                        chat.documents.length>2 && <Badge variant={"secondary"} >+{chat.documents.length-2}</Badge>
+                    }
+                </div>
+                </div>
                 <ChevronRight/>
             </div>
         ))}
