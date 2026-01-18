@@ -52,6 +52,31 @@ export const authOptions:NextAuthOptions={
 
 
         },
+
+        async jwt({token,account,profile}){
+            if(account && !token.userId){
+                const user= await prisma.user.findFirst({
+                    where:{
+                        email:token.email!
+                    },
+                    select:{
+                        id:true
+                    }
+                })
+
+                if(user){
+                    token.userId=user.id;
+                }
+            }
+            return token;
+        },
+
+        async session({session,token}){
+            if(token.userId && session.user){
+                session.user.id= token.userId;
+            }
+            return session;
+        }
     }
 
 }

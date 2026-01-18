@@ -16,18 +16,30 @@ model User{
   createdAt DateTime
   lastLoginAt DateTime
   chats Chat[]
+  files File[]
 }
 
 model Chat{
   chatId String @id @default(uuid())
-  userId String 
+  userId String
+  title String 
   user User @relation(fields: [userId],references: [id])
-  files File[]
+  files ChatFile[]
+  createdAt DateTime @default(now())
+}
+
+model ChatFile{
+  id String @id @default(uuid())
+  chatId String
+  fileId String
+  chat Chat @relation(fields: [chatId],references: [chatId])
+  file File @relation(fields: [fileId],references: [fileId])
 }
 
 model File{
   fileId String @id @default(uuid())
   fileName String
-  chatId String
-  chat Chat @relation(fields: [chatId],references: [chatId])
+  userId String
+  user User @relation(fields: [userId],references: [id])
+  chats ChatFile[]
 }
