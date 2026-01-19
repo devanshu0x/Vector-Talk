@@ -63,3 +63,32 @@ export async function fetchPrevChats(){
         throw new Error("Failed to fetch chats");
     }
 }
+
+export async function changeChatName(name:string,chatId:string){
+    const session=await getServerSession(authOptions);
+    if(!session || !session.user){
+        throw new Error("Unauthorized")
+    }
+    if(name.length<1){
+        throw new Error("Name too short");
+    }
+    try{
+        const updatedChat= await prisma.chat.updateMany({
+            where:{
+                chatId,
+                userId:session.user.id
+            },
+            data:{
+                title:name
+            }
+        })
+        if(!updatedChat){
+            throw new Error("Chat not found or you dont have permission to edit it");
+        }
+        return {message:"Chat name updated successfully"}
+    }catch(err){
+        console.error("Error while changing chat name:",err);
+        throw new Error("Failed to update chat name");
+    }
+
+}
