@@ -1,8 +1,16 @@
 "use client";
 
 import { UploadIcon } from "lucide-react";
+import axios from "axios"
+import { useSession } from "next-auth/react";
+import { Skeleton } from "./skeleton";
 
 export function FileUpload(){
+    const session=useSession();
+
+    if(session.status!=="authenticated"){
+        return <Skeleton className="w-42 h-32"/>
+    }
 
     const handleFileUploadOnClick=()=>{
         const el= document.createElement('input');
@@ -14,10 +22,8 @@ export function FileUpload(){
                 if(file){
                     const formData=new FormData();
                     formData.append("pdf",file);
-                    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/upload/pdf`,{
-                        method:"POST",
-                        body:formData
-                    })
+                    formData.append("userId",session.data.user.id);
+                    await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload/pdf`,formData)
                     
 
                 }

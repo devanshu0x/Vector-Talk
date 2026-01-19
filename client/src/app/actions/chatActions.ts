@@ -8,7 +8,6 @@ import { redirect } from "next/navigation";
 export async function createChat(title:string){
     const session = await getServerSession(authOptions);
     const user=session?.user;
-    console.log(user);
     if(!session || !user){
         throw new Error("Unauthorized");
     }

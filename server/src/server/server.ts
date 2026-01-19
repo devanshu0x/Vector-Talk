@@ -4,7 +4,7 @@ import "dotenv/config"
 import { upload } from "../config/multerConfig.js";
 import { queue } from "../config/bullmqConfig.js";
 import cookieParser from "cookie-parser";
-import { authMiddleware } from "../middleware/authMiddleware.js";
+import prisma from "../lib/prisma.js";
 
 
 const app= express();
@@ -16,14 +16,48 @@ app.get("/",(req,res)=>{
 })
 
 
-app.use(authMiddleware);
-
 app.post('/upload/pdf', upload.single("pdf"),async (req,res)=>{
-    await queue.add('file-upload',{
-        filename:req.file?.originalname,
-        destination: req.file?.destination,
+    const userId=req.body.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    try{
+        if(!req.file){
+            return res.status(400).json({
+                message:"File not present"
+            });
+        }
+        const dbFile=await prisma.file.create({
+            data:{
+                fileNameInDb:req.file.filename,
+                fileName:req.file.originalname,
+                status:"UPLOADED",
+                createdAt:new Date(),
+                userId
+            }
+        })
+        await queue.add('file-upload',{
+        filename:req.file.originalname,
+        fileId:dbFile.fileId,
         path:req.file?.path
-    });
+        });
+
+        await prisma.file.updateMany({
+            where:{
+                fileId:dbFile.fileId,
+                status:"UPLOADED"
+            },
+            data:{
+                status:"QUEUED"
+            }
+        });
+
+    }catch(err){
+        console.error("Some erorr occured ",err);
+        return res.status(500).json({
+            message:"Some error occured in uploading file"
+        });
+    }
     return res.json({
         message:"Uploaded Pdf"
     })
