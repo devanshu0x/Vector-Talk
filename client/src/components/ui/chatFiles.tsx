@@ -2,11 +2,11 @@
 import { useEffect, useState } from "react"
 import { Button } from "./button";
 import { FileUpload } from "./fileUpload";
-import { Dialog, DialogTrigger } from "./dialog";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./dialog";
 import { DocumentSelectorDialogContent } from "./documentSelectorDialogContent";
 import { fetchAllSelectedFiles, updateChatFiles } from "@/app/actions/fileActions";
 import { Badge } from "./badge";
-import { Loader2 } from "lucide-react";
+import { File, Loader2 } from "lucide-react";
 
 interface ChatFilesProps {
     chatId: string;
@@ -62,10 +62,36 @@ export function ChatFiles({ chatId }: ChatFilesProps) {
             <h4 className="text-center text-lg mb-2">Selected Files</h4>
             {isLoading ? <div className="py-4 flex justify-center items-center">
                 <Loader2 size={32} className="animate-spin opacity-70" />
-            </div> : <div className="flex flex-wrap gap-1">
-                {selectedFiles.map((file) => (
-                    <Badge key={file.fileId} >{file.fileName.slice(0, 30)}</Badge>
+            </div> : <div className="flex flex-col flex-wrap gap-1">
+                {selectedFiles.slice(0,2).map((file) => (
+                    <div className="p-2 border rounded-md wrap-anywhere text-sm flex items-center gap-1" key={file.fileId} > <File size={16} className="opacity-60" /> {file.fileName.slice(0, 30)+(file.fileName.length>30? "...":"")}</div>
                 ))}
+                {
+                    selectedFiles.length>2 && <Dialog>
+                        <DialogTrigger asChild>
+                            <Button className="mt-2" variant={"outline"}>Show All Files</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-md">
+                            <DialogHeader>
+                                <DialogTitle className="text-center">All Selected Files</DialogTitle>
+                                <DialogDescription>Total Files Selected: {selectedFiles.length}</DialogDescription>
+                            </DialogHeader>
+                            <div className="max-h-80 space-y-2">
+                                {selectedFiles.map((file)=>(
+                                    <div key={file.fileId} className="p-2 text-sm border rounded-md flex items-center gap-2">
+                                        <File className="shrink-0" size={18} />
+                                        {file.fileName}
+                                    </div>
+                                ))}
+                            </div>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button variant={"secondary"}>Close Dialog</Button>
+                                </DialogClose>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                }
             </div>}
         </div>
     </div>
