@@ -1,4 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { ChatArea } from "@/components/ui/chatArea";
 import { ChatFiles } from "@/components/ui/chatFiles";
 import { ChatName } from "@/components/ui/chatName";
 import { QueryInputArea } from "@/components/ui/queryInputArea";
@@ -35,18 +36,13 @@ export default async function ChatPage({params}:ChatPageProps){
         redirect("/dashboard");
     }
     return <main className="flex-1 flex flex-col">
-        <div className="flex-1 w-full h-full mb-3 grid grid-cols-10 rounded-lg overflow-clip border shadow">
-            <div className="col-span-4 hidden sm:block border-r-2 pt-3 pb-2">
+        <div className="flex-1 w-full h-full mb-3 sm:grid grid-cols-10 rounded-lg overflow-clip border shadow">
+            <div className="col-span-4  border-r-2 pt-3 pb-2">
                 <ChatName chatId={chatData.chatId} name={chatData.title}/>
                 <ChatFiles chatId={chatData.chatId} />
             </div>
-            <div className="col-span-10 sm:col-span-6 relative flex flex-col items-center justify-center">
-                <div className="space-y-2 flex flex-col justify-center items-center opacity-50">
-                    <FileText size={"30"}/>
-                    <h6 className="sm:text-xl">Upload a PDF to begin</h6>
-                </div>
-                {/* Chats here */}
-                <QueryInputArea/>
+            <div className="min-h-100 col-span-10 sm:col-span-6 relative flex flex-col items-center justify-center">
+                <ChatArea/>
             </div>
         </div>
     </main>

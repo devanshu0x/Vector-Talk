@@ -28,7 +28,7 @@ const worker= new Worker<FileUploadQueue>(
             throw new Error("PDF contain no extractable text");
         }
 
-        const splitter= new RecursiveCharacterTextSplitter({chunkSize:300,chunkOverlap:0});
+        const splitter= new RecursiveCharacterTextSplitter({chunkSize:800,chunkOverlap:100});
         
         const documents= await splitter.createDocuments(
             [docs.text],

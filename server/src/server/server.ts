@@ -5,11 +5,14 @@ import { upload } from "../config/multerConfig.js";
 import { queue, type FileUploadQueue } from "../config/bullmqConfig.js";
 import cookieParser from "cookie-parser";
 import prisma from "../lib/prisma.js";
+import { llm, vectorStore } from "../config/langchainConfig.js";
+import { prompt } from "../config/prompt.js";
 
 
 const app= express();
 app.use(cors());
 app.use(cookieParser());
+app.use(express.json());
 
 app.get("/",(req,res)=>{
     res.send("Sever working properly");
@@ -66,6 +69,71 @@ app.post('/upload/pdf', upload.single("pdf"),async (req,res)=>{
         fileId,
         message:"Uploaded Pdf"
     })
+})
+
+
+app.post("/query",async (req,res)=>{
+    const {query,chatId,userId}=req.body;
+    if(query.length==0 || !chatId){
+        return res.status(400).json({
+            message:"Invalid parameters"
+        })
+    }
+
+    try{
+        const chat=await prisma.chat.findFirst({
+        where:{
+            chatId,
+            userId
+        },
+        select:{
+            files:{
+                select:{
+                    fileId:true
+                }
+            }
+        }
+    })
+
+    if(!chat){
+        return res.status(401).json({
+            message:"Chat not found or you do not have access"
+        });
+    }
+
+    const files=chat.files.map((item)=>{
+        return item.fileId;
+    });
+
+    const filter={
+        must:[
+            {
+                key:"metadata.fileId",
+                match:{
+                    any:files
+                }
+            }
+        ]
+    };
+
+    const similaritySearchResult= await vectorStore.similaritySearch(query,5,filter);
+
+    
+    const context = similaritySearchResult.map((doc, idx) => `Source ${idx + 1}:\n${doc.pageContent}`).join("\n\n");
+
+    const result= await llm.invoke(prompt(context,query));
+
+    res.json({
+        response:result.content
+    })
+    }catch(err){
+        console.error("Error occured while answering query: ",err);
+        res.status(500).json({
+            message:"Some error occured"
+        })
+    }
+
+
 })
 
 app.listen(process.env.PORT,()=>{
