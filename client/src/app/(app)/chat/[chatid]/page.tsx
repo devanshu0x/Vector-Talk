@@ -36,8 +36,7 @@ export default async function ChatPage({params}:ChatPageProps){
     }
     return <main className="flex-1 flex flex-col">
         <div className="flex-1 w-full h-full mb-3 grid grid-cols-10 rounded-lg overflow-clip border shadow">
-            <div className="col-span-4 hidden sm:block border-r-2 py-2">
-                {/* Maybe I can display files uploaded until now and current file uploading progress and some details about this chat like its name, total files uploaded*/}
+            <div className="col-span-4 hidden sm:block border-r-2 pt-3 pb-2">
                 <ChatName chatId={chatData.chatId} name={chatData.title}/>
                 <ChatFiles chatId={chatData.chatId} />
             </div>

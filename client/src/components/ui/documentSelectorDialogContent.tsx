@@ -67,9 +67,9 @@ export function DocumentSelectorDialogContent({onSelect,setOpen,open,initialSele
                     <DialogTitle>Select Files</DialogTitle>
                     <DialogDescription>Select files that you want to use in this chat</DialogDescription>
                 </DialogHeader>
-                <Command>
+                <Command >
                     <CommandInput placeholder="Search for uploaded files" />
-                    <CommandList>
+                    <CommandList className="scrollbar-none">
                         
                             {
                                 isLoading ? <div className="py-4 flex justify-center items-center"><Loader2 size={32} className="animate-spin opacity-70" /></div>: <div><CommandEmpty>No Files Found</CommandEmpty>

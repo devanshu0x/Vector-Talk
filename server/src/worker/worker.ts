@@ -12,8 +12,7 @@ import type { FileUploadQueue } from "../config/bullmqConfig.js";
 const worker= new Worker<FileUploadQueue>(
     'file-upload-queue',
     async (job)=>{
-        // Flow: Load data -> divide it in chunks -> create embeddings -> store to vector db
-
+    try{
         await prisma.file.update({
             where:{
                 fileId:job.data.fileId
@@ -25,11 +24,15 @@ const worker= new Worker<FileUploadQueue>(
 
         const parser=new PDFParse({url:job.data.path})
         const docs= await parser.getText();
+        if(!docs.text || docs.text.trim().length===0){
+            throw new Error("PDF contain no extractable text");
+        }
+
         const splitter= new RecursiveCharacterTextSplitter({chunkSize:300,chunkOverlap:0});
         
         const documents= await splitter.createDocuments(
             [docs.text],
-            [{source:job.data.filename}]
+            [{fileName:job.data.filename,fileId:job.data.fileId}]
         )
 
         await prisma.file.update({
@@ -40,7 +43,9 @@ const worker= new Worker<FileUploadQueue>(
                 status:"EMBEDDING"
             }
         })
+
         await vectorStore.addDocuments(documents);
+
         await prisma.chatFile.create({
             data:{
                 chatId:job.data.chatId,
@@ -55,6 +60,21 @@ const worker= new Worker<FileUploadQueue>(
                 status:"READY"
             }
         })
+    }catch(err){
+        console.error(" File processing failed", {
+        jobId: job.id,
+        error: err});
+
+        await prisma.file.update({
+            where:{
+                fileId:job.data.fileId
+            },
+            data:{
+                status:"FAILED"
+            }
+        })
+        throw err;
+    }
     },
     {
         connection:{

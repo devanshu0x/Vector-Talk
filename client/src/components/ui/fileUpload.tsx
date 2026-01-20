@@ -8,7 +8,12 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { fetchFileStatus } from "@/app/actions/fileActions";
 
-export function FileUpload() {
+interface FileUploadProps{
+    fetchIt:()=>void;
+    chatId:string;
+}
+
+export function FileUpload({fetchIt,chatId}:FileUploadProps) {
     const session = useSession();
     const [fileId, setFileId] = useState<string | null>(null);
     const [fileName, setFileName] = useState<string | null>("");
@@ -21,11 +26,16 @@ export function FileUpload() {
             const res= await fetchFileStatus(fileId);
             setStatus(res.status);
             if(res.status=="READY" || res.status==="FAILED"){
+                if(res.status==="READY"){
+                    fetchIt();
+                }
                 clearInterval(interval);
             }
         },1000);
 
-        return ()=>clearInterval(interval);
+        return ()=>{
+            clearInterval(interval);
+        };
 
     },[fileId])
 
@@ -81,6 +91,7 @@ export function FileUpload() {
         const formData = new FormData();
         formData.append("pdf", file);
         formData.append("userId", session.data.user.id);
+        formData.append("chatId",chatId)
 
         const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/upload/pdf`,
