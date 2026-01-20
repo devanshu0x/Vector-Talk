@@ -5,6 +5,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Badge } from "./badge";
 import { useEffect, useState } from "react";
 import { fetchPrevChats } from "@/app/actions/chatActions";
+import { useRouter } from "next/navigation";
 
 function trimTitle(title: string, len: number) {
     if (title.length <= len) return title;
@@ -22,6 +23,7 @@ interface Chat {
 
 export function PreviousChats() {
     const [chats, setChats] = useState<Chat[]>([]);
+    const router=useRouter();
     async function fetchChats() {
         const res = await fetchPrevChats();
         console.log(res.chats);
@@ -34,12 +36,14 @@ export function PreviousChats() {
     }
 
     useEffect(() => {
-        fetchChats();
+        fetchChats();        
     }, [])
 
     return <div className="space-y-3">
         {chats.map((chat) => (
-            <div key={chat.chatId} className="rounded-md border px-4 py-2 font-heading flex justify-between items-center" >
+            <div onClick={()=>{
+                router.push(`/chat/${chat.chatId}`)
+            }} key={chat.chatId} className="rounded-md border hover:bg-accent/15 transition-colors duration-200 px-4 py-2 font-heading flex justify-between items-center" >
                 <div className="flex flex-col">
                     {chat.title}
 

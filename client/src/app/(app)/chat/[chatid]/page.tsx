@@ -1,6 +1,6 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import { ChatFiles } from "@/components/ui/chatFiles";
 import { ChatName } from "@/components/ui/chatName";
-import { FileUpload } from "@/components/ui/fileUpload";
 import { QueryInputArea } from "@/components/ui/queryInputArea";
 import prisma from "@/lib/prisma";
 import { FileText } from "lucide-react";
@@ -39,7 +39,7 @@ export default async function ChatPage({params}:ChatPageProps){
             <div className="col-span-4 hidden sm:block border-r-2 py-2">
                 {/* Maybe I can display files uploaded until now and current file uploading progress and some details about this chat like its name, total files uploaded*/}
                 <ChatName chatId={chatData.chatId} name={chatData.title}/>
-                <FileUpload/>
+                <ChatFiles chatId={chatData.chatId} />
             </div>
             <div className="col-span-10 sm:col-span-6 relative flex flex-col items-center justify-center">
                 <div className="space-y-2 flex flex-col justify-center items-center opacity-50">

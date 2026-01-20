@@ -9,7 +9,7 @@ export function FileUpload(){
     const session=useSession();
 
     if(session.status!=="authenticated"){
-        return <Skeleton className="w-42 h-32"/>
+        return <Skeleton className="w-full h-32"/>
     }
 
     const handleFileUploadOnClick=()=>{
@@ -24,8 +24,6 @@ export function FileUpload(){
                     formData.append("pdf",file);
                     formData.append("userId",session.data.user.id);
                     await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/upload/pdf`,formData)
-                    
-
                 }
             }
         })
