@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors"
 import "dotenv/config"
 import { upload } from "../config/multerConfig.js";
-import { queue } from "../config/bullmqConfig.js";
+import { queue, type FileUploadQueue } from "../config/bullmqConfig.js";
 import cookieParser from "cookie-parser";
 import prisma from "../lib/prisma.js";
 
@@ -18,9 +18,11 @@ app.get("/",(req,res)=>{
 
 app.post('/upload/pdf', upload.single("pdf"),async (req,res)=>{
     const userId=req.body.userId;
+    const chatId=req.body.chatId;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    let fileId;
     try{
         if(!req.file){
             return res.status(400).json({
@@ -39,7 +41,8 @@ app.post('/upload/pdf', upload.single("pdf"),async (req,res)=>{
         await queue.add('file-upload',{
         filename:req.file.originalname,
         fileId:dbFile.fileId,
-        path:req.file?.path
+        path:req.file?.path,
+        chatId
         });
 
         await prisma.file.updateMany({
@@ -51,6 +54,7 @@ app.post('/upload/pdf', upload.single("pdf"),async (req,res)=>{
                 status:"QUEUED"
             }
         });
+        fileId=dbFile.fileId;
 
     }catch(err){
         console.error("Some erorr occured ",err);
@@ -59,6 +63,7 @@ app.post('/upload/pdf', upload.single("pdf"),async (req,res)=>{
         });
     }
     return res.json({
+        fileId,
         message:"Uploaded Pdf"
     })
 })

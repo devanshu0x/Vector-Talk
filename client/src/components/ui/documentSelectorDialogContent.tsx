@@ -5,6 +5,8 @@ import { DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHead
 import { fetchAllFiles } from "@/app/actions/fileActions";
 import { Checkbox } from "./checkbox";
 import { Button } from "./button";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface File{
     fileId:string;
@@ -22,6 +24,7 @@ interface DocumentSelectorDialogContentProps{
 export function DocumentSelectorDialogContent({onSelect,setOpen,open,initialSelectedIds}:DocumentSelectorDialogContentProps){
     const [files,setFiles]=useState<File[]>([]);
     const[selectedIds,setSelectedIds]=useState<Set<string>>(new Set());
+    const [isLoading,setIsLoading]=useState<boolean>(false);
 
     function toggleFile(fileId:string){
         setSelectedIds((prev) =>{
@@ -37,8 +40,16 @@ export function DocumentSelectorDialogContent({onSelect,setOpen,open,initialSele
     }
 
     async function fetchFiles(){
-        const res= await fetchAllFiles();
-        setFiles(res.files);
+        setIsLoading(true);
+        try{
+            const res= await fetchAllFiles();
+            setFiles(res.files);
+        }catch(err){
+            toast.error("Failed to fetch files")
+        }
+        finally{
+            setIsLoading(false);
+        }
     }
 
     useEffect(()=>{
@@ -60,12 +71,15 @@ export function DocumentSelectorDialogContent({onSelect,setOpen,open,initialSele
                     <CommandInput placeholder="Search for uploaded files" />
                     <CommandList>
                         
-                            <CommandEmpty>No Files Found</CommandEmpty>
+                            {
+                                isLoading ? <div className="py-4 flex justify-center items-center"><Loader2 size={32} className="animate-spin opacity-70" /></div>: <div><CommandEmpty>No Files Found</CommandEmpty>
                             {
                                 files.map((file)=>(
                                     <CommandItem onSelect={()=>toggleFile(file.fileId)} className="mt-1" key={file.fileId} value={file.fileNameInDb} > <Checkbox checked={selectedIds.has(file.fileId)} /> {file.fileNameInDb}</CommandItem>
                                 ))
+                            }</div>
                             }
+                            
                        
                     </CommandList>
                 </Command>

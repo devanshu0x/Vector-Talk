@@ -64,12 +64,9 @@ export function ChatFiles({chatId}:ChatFilesProps){
             {isLoading? <div className="py-4 flex justify-center items-center">
                 <Loader2 size={32} className="animate-spin opacity-70"/>
             </div> : <div className="flex gap-1">
-            {selectedFiles.slice(0,3).map((file)=>(
-                <Badge key={file.fileId} >{file.fileName}</Badge>
+            {selectedFiles.map((file)=>(
+                <Badge key={file.fileId} >{file.fileName.slice(0,30)}</Badge>
             ))}
-            {
-                selectedFiles.length>3 && <Button variant={"ghost"}>Show more</Button>
-            }
         </div>}
         </div>
     </div>

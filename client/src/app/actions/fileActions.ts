@@ -61,6 +61,22 @@ export async function fetchAllSelectedFiles(chatId:string){
 
 
 export async function updateChatFiles(chatId:string, fileIds:string[]){
+    const session= await getServerSession(authOptions);
+    if(!session || !session.user){
+        throw new Error("Unauthorized");
+    }
+
+    const chat = await prisma.chat.findFirst({
+        where:{
+            chatId,
+            userId:session.user.id
+        }
+    });
+
+    if(!chat){
+        throw new Error("You are not authorized to update this chat")
+    }
+
     await prisma.$transaction(async (tx)=>{
         await tx.chatFile.deleteMany({
             where:{
@@ -77,4 +93,27 @@ export async function updateChatFiles(chatId:string, fileIds:string[]){
             })
         }
     })
+}
+
+export async function fetchFileStatus(fileId:string){
+    const session = await getServerSession(authOptions);
+    if(!session || !session.user){
+        throw new Error("Unauthorized");
+    }
+
+    const file= await prisma.file.findFirst({
+        where:{
+            fileId,
+            userId:session.user.id
+        },
+        select:{
+            status:true
+        }
+    });
+
+    if(!file){
+        throw new Error("File not found");
+    }
+
+    return file;
 }

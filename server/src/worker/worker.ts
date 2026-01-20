@@ -41,6 +41,12 @@ const worker= new Worker<FileUploadQueue>(
             }
         })
         await vectorStore.addDocuments(documents);
+        await prisma.chatFile.create({
+            data:{
+                chatId:job.data.chatId,
+                fileId:job.data.fileId
+            }
+        })
         await prisma.file.update({
             where:{
                 fileId:job.data.fileId
