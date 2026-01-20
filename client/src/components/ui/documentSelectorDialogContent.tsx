@@ -72,12 +72,12 @@ export function DocumentSelectorDialogContent({onSelect,setOpen,open,initialSele
                     <CommandList className="scrollbar-none">
                         
                             {
-                                isLoading ? <div className="py-4 flex justify-center items-center"><Loader2 size={32} className="animate-spin opacity-70" /></div>: <div><CommandEmpty>No Files Found</CommandEmpty>
+                                isLoading ? <div className="py-4 flex justify-center items-center"><Loader2 size={32} className="animate-spin opacity-70" /></div>: <><CommandEmpty>No Files Found</CommandEmpty>
                             {
                                 files.map((file)=>(
                                     <CommandItem onSelect={()=>toggleFile(file.fileId)} className="mt-1" key={file.fileId} value={file.fileNameInDb} > <Checkbox checked={selectedIds.has(file.fileId)} /> {file.fileNameInDb}</CommandItem>
                                 ))
-                            }</div>
+                            }</>
                             }
                             
                        
