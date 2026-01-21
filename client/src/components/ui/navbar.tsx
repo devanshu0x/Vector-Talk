@@ -12,11 +12,11 @@ export function Navbar(){
     const session= useSession();
     
     if(session.status!=="authenticated"){
-        return <Skeleton className="flex justify-between items-center absolute top-4 left-2 sm:left-4 md:left-8 right-2 sm:right-4 md:right-8 border text-accent-foreground px-3 py-2 rounded-lg shadow cursor-pointer h-11">
+        return <Skeleton className="flex justify-between items-center fixed z-10 top-4 left-2 sm:left-4 md:left-8 right-2 sm:right-4 md:right-8 border text-accent-foreground px-3 py-2 rounded-lg shadow cursor-pointer h-11">
         </Skeleton>
     }
     const user= session.data.user;
-    return <nav className="flex justify-between items-center fixed bg-background top-4 left-2 sm:left-4 md:left-8 right-2 sm:right-4 md:right-8 border text-accent-foreground px-3 py-2 rounded-lg shadow cursor-pointer">
+    return <nav className="flex justify-between items-center fixed z-10 bg-background/80 backdrop-blur-sm top-4 left-2 sm:left-4 md:left-8 right-2 sm:right-4 md:right-8 border text-accent-foreground px-3 py-2 rounded-lg shadow cursor-pointer">
         <h1 onClick={()=>router.push("/")} className="font-bold">
             Vector Talk
         </h1>

@@ -124,7 +124,7 @@ app.post("/query",async (req,res)=>{
     const result= await llm.invoke(prompt(context,query));
 
     res.json({
-        response:result.content
+        answer:result.content
     })
     }catch(err){
         console.error("Error occured while answering query: ",err);

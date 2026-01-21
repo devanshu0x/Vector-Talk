@@ -16,6 +16,9 @@ interface ChatPageProps{
 
 export default async function ChatPage({params}:ChatPageProps){
     const session= await getServerSession(authOptions);
+    if(!session || !session.user){
+        redirect("/dashboard")
+    }
     const param= await params;
     const chatId=param.chatid;
     let chatData;
@@ -35,14 +38,14 @@ export default async function ChatPage({params}:ChatPageProps){
         console.log(err);
         redirect("/dashboard");
     }
-    return <main className="flex-1 flex flex-col">
-        <div className="flex-1 w-full h-full mb-3 sm:grid grid-cols-10 rounded-lg overflow-clip border shadow">
+    return <main className="flex-1 overflow-hidden flex max-h-[calc(100dvh-5rem)] flex-col">
+        <div className="flex-1 w-full h-full mb-3 sm:grid grid-cols-10 rounded-lg overflow-hidden border shadow">
             <div className="col-span-4  border-r-2 pt-3 pb-2">
                 <ChatName chatId={chatData.chatId} name={chatData.title}/>
                 <ChatFiles chatId={chatData.chatId} />
             </div>
-            <div className="min-h-100 col-span-10 sm:col-span-6 relative flex flex-col items-center justify-center">
-                <ChatArea/>
+            <div className="col-span-10 sm:col-span-6 relative flex flex-col h-full min-h-0 items-center justify-center">
+                <ChatArea chatId={chatId} userId={session.user.id} />
             </div>
         </div>
     </main>
