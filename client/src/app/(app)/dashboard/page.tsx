@@ -1,8 +1,12 @@
+import { fetchAllFiles } from "@/app/actions/fileActions";
 import { DocumentsList } from "@/components/ui/documentsList";
 import { NewChatButton } from "@/components/ui/newChatButton";
 import { PreviousChats } from "@/components/ui/previousChats";
 
-export default function Dashboard(){
+export default async function Dashboard(){
+
+    const res= await fetchAllFiles();
+    const documentList=res.files;
     
     return <main className="flex-1 flex flex-col h-full rounded-lg overflow-clip">
         <div className="grid md:grid-cols-2 rounded-lg overflow-clip border mt-4">
@@ -27,7 +31,7 @@ export default function Dashboard(){
 
         {/* Documents uploaded list */}
         <div className="border p-2 sm:p-4 md:p-6 rounded-lg ">
-            <DocumentsList/>
+            <DocumentsList documentList={documentList} />
         </div>
 
         {/* prev chats */}

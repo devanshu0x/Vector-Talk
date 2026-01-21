@@ -28,35 +28,47 @@ export async function createChat(title:string){
 }
 
 
-export async function fetchPrevChats(){
+export async function fetchPrevChats(page:number=1,limit:number=5){
     const session= await getServerSession(authOptions);
     const user=session?.user;
     if(!session || !user){
         throw new Error("Unauthorized");
     }
+
+    const skip= (page-1)*limit;
+
     try{
-        const chats=await prisma.chat.findMany({
-            where:{
-                userId:user.id
-            },
-            select:{
-                chatId:true,
-                createdAt:true,
-                title:true,
-                files:{
-                    select:{
-                        file:{
-                            select:{
-                                fileName:true
+        const [chats,totalCount]= await Promise.all([
+            prisma.chat.findMany({
+                where:{userId:user.id},
+                orderBy:{createdAt:"desc"},
+                skip:skip,
+                take:limit,
+                select:{
+                    chatId:true,
+                    createdAt:true,
+                    title:true,
+                    files:{
+                        select:{
+                            file:{
+                                select:{
+                                    fileName:true
+                                }
                             }
                         }
                     }
                 }
-            }
-        })
+            }),
 
+            prisma.chat.count({
+                where:{userId:user.id}
+            })
+        ]);
         return {
-            chats
+            chats,
+            totalCount,
+            totalPages:Math.ceil(totalCount/limit),
+            currentPage:page
         }
     }catch(err){
         console.error("Error while fetching chats ",err);

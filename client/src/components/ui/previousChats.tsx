@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MessageCircleDashed } from "lucide-react";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "./pagination";
 import { Badge } from "./badge";
 import { useEffect, useState } from "react";
@@ -23,23 +23,29 @@ interface Chat {
 
 export function PreviousChats() {
     const [chats, setChats] = useState<Chat[]>([]);
+    const [page,setPage]=useState(1);
+    const [totalPages,setTotalPages]=useState(1);
     const router=useRouter();
-    async function fetchChats() {
-        const res = await fetchPrevChats();
-        console.log(res.chats);
+    const LIMIT=5;
+
+    async function fetchChats(currentPage:number) {
+        const res = await fetchPrevChats(currentPage,LIMIT);
+
         const newChats = res.chats.map((chat) => {
             const files = chat.files.map((file) => file.file.fileName);
             const newChat = { ...chat, files };
             return newChat;
         })
         setChats(newChats);
+        setTotalPages(res.totalPages);
     }
 
     useEffect(() => {
-        fetchChats();        
-    }, [])
+        fetchChats(page);        
+    }, [page])
 
-    return <div className="space-y-3">
+    return <div> 
+    <div className="space-y-3 ">
         {chats.map((chat) => (
             <div onClick={()=>{
                 router.push(`/chat/${chat.chatId}`)
@@ -66,16 +72,31 @@ export function PreviousChats() {
                 <ChevronRight />
             </div>
         ))}
-        <Pagination>
+        {
+            chats.length===0 && <div className="min-h-80 flex flex-col items-center justify-center">
+                <MessageCircleDashed size={80} className="opacity-50"/>
+                <h6>No Previous Chats Found</h6>
+            </div>
+        }
+    </div>
+    <Pagination className="mt-4">
             <PaginationContent>
                 <PaginationItem>
-                    <PaginationPrevious />
+                    <PaginationPrevious onClick={()=>{
+                        if(page>1){
+                            setPage(page-1);
+                        }
+                    }} className={page === 1 ? "pointer-events-none opacity-50" : ""} />
                 </PaginationItem>
                 <PaginationItem>
-                    <PaginationLink isActive>1</PaginationLink>
+                    <PaginationLink isActive>{page}</PaginationLink>
                 </PaginationItem>
                 <PaginationItem>
-                    <PaginationNext />
+                    <PaginationNext onClick={()=>{
+                        if(page<totalPages){
+                            setPage(page+1);
+                        }
+                    }} className={page===totalPages ? "pointer-events-none opacity-50":""} />
                 </PaginationItem>
             </PaginationContent>
         </Pagination>
