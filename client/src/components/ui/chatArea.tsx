@@ -53,11 +53,11 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
         }
     }
 
-    return <div className="flex flex-col w-full h-full overflow-hidden">
-      {/* Messages */}
-      <div className="flex-1 w-full overflow-y-auto scrollbar-none px-4 pt-3 pb-15 space-y-3">
+    return <div className="flex grow flex-col w-full h-full overflow-hidden">
+     
+      <div className="flex-1 flex flex-col w-full  overflow-y-auto scrollbar-none px-4 pt-3 pb-15 space-y-3">
         {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
+          <div className="h-full grow flex flex-col  items-center justify-center text-muted-foreground">
             <FileText size={28} />
             <p className="mt-2 text-sm">Ask a question about your PDFs</p>
           </div>

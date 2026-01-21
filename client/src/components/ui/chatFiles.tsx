@@ -69,7 +69,7 @@ export function ChatFiles({ chatId }: ChatFilesProps) {
                 {
                     selectedFiles.length>2 && <Dialog>
                         <DialogTrigger asChild>
-                            <Button className="mt-2" variant={"outline"}>Show All Files</Button>
+                            <Button className="my-2" variant={"outline"}>Show All Files</Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-md">
                             <DialogHeader>
