@@ -6,6 +6,7 @@ import { Badge } from "./badge";
 import { useEffect, useState } from "react";
 import { fetchPrevChats } from "@/app/actions/chatActions";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 function trimTitle(title: string, len: number) {
     if (title.length <= len) return title;
@@ -29,22 +30,28 @@ export function PreviousChats() {
     const LIMIT=5;
 
     async function fetchChats(currentPage:number) {
-        const res = await fetchPrevChats(currentPage,LIMIT);
 
-        const newChats = res.chats.map((chat) => {
+       try{
+         const res = await fetchPrevChats(currentPage,LIMIT);
+         const newChats = res.chats.map((chat) => {
             const files = chat.files.map((file) => file.file.fileName);
             const newChat = { ...chat, files };
             return newChat;
         })
         setChats(newChats);
         setTotalPages(res.totalPages);
+       }catch(err){
+        toast.error("Failed to fetch previous chats");
+        
+       }
+        
     }
 
     useEffect(() => {
         fetchChats(page);        
     }, [page])
 
-    return <div> 
+    return <div id="previous-chats"> 
     <div className="space-y-3 ">
         {chats.map((chat) => (
             <div onClick={()=>{

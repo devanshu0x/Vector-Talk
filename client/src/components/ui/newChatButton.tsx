@@ -13,6 +13,11 @@ export const NewChatButton=()=>{
     const [isSubmitting,setIsSubmitting]=useState<boolean>(false);
     const [title,setTitle]=useState<string>("");
 
+    const scrollToPrevChat=()=>{
+        const el= document.getElementById("previous-chats");
+        el?.scrollIntoView({behavior:"smooth"})
+    }
+
     const startNewChatHandler= async ()=>{
         setIsSubmitting(true)
         try{
@@ -59,7 +64,7 @@ export const NewChatButton=()=>{
 
             </DialogContent>
         </Dialog>
-        <Button variant={"outline"}  className="w-full flex-1" >
+        <Button variant={"outline"} onClick={scrollToPrevChat}  className="w-full flex-1" >
             See Previous Chats
         </Button>
     </div>

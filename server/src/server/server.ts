@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import prisma from "../lib/prisma.js";
 import { llm, vectorStore } from "../config/langchainConfig.js";
 import { prompt } from "../config/prompt.js";
+import path from "node:path";
 
 
 const app= express();
@@ -135,6 +136,35 @@ app.post("/query",async (req,res)=>{
 
 
 })
+
+
+app.post("/download/:fileId", async (req,res)=>{
+    const {userId} =req.body;
+    const {fileId}= req.params;
+
+    if(!userId || !fileId){
+        res.status(400).json({
+            message:"Invalid parameters"
+        });
+    }
+
+    const file=await prisma.file.findFirst({
+        where:{
+            fileId,
+            userId
+        }
+    });
+
+    if (!file) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const filepath= path.join(process.cwd(),"uploads",file.fileNameInDb);
+
+})
+
+
+
 
 app.listen(process.env.PORT,()=>{
     console.log(`Server started on Port ${process.env.PORT}`)
