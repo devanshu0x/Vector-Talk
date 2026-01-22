@@ -4,7 +4,7 @@ import { Button } from "./button";
 
 export function LandingPageButton(){
     const router=useRouter();
-    return <div className="py-12">
-        <Button className="text-xl px-12 font-heading" onClick={()=>router.push("/dashboard")}>Try Now!</Button>
+    return <div>
+        <Button variant={"secondary"} className="text-xl w-full border font-heading" onClick={()=>router.push("/dashboard")}>Try Now!</Button>
     </div>
 }

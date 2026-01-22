@@ -12,7 +12,7 @@ export function Providers({children}:ProvidersProps){
     return (
         <SessionProvider>
             <Toaster/>
-            <ThemeProvider attribute={"class"} defaultTheme="system" enableSystem disableTransitionOnChange>
+            <ThemeProvider attribute={"class"} defaultTheme="dark" enableSystem disableTransitionOnChange>
                 {children}
             </ThemeProvider>
         </SessionProvider>
