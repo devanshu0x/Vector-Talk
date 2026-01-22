@@ -1,10 +1,10 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { Button } from "./ui/button";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "./ui/drawer";
-import { ChatName } from "./ui/chatName";
-import { ChatFiles } from "./ui/chatFiles";
+import { Button } from "./button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "./drawer";
+import { ChatName } from "./chatName";
+import { ChatFiles } from "./chatFiles";
 
 interface ChatDetailDrawerProps{
     chatId:string;

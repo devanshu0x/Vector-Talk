@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
-import { ChatDetailDrawer } from "@/components/chatDetailDrawer";
+import { ChatDetailDrawer } from "@/components/ui/chatDetailDrawer";
 import { ChatArea } from "@/components/ui/chatArea";
 import { ChatFiles } from "@/components/ui/chatFiles";
 import { ChatName } from "@/components/ui/chatName";

@@ -13,3 +13,16 @@ export const queue= new Queue<FileUploadQueue>("file-upload-queue",{
         port:6379
     }
 });
+
+
+export interface FileDeletionQueue{
+    fileId:string;
+    fileNameInDb:string;
+}
+
+export const deletionQueue= new Queue<FileDeletionQueue>("file-deletion-queue",{
+    connection:{
+        host:"localhost",
+        port:6379
+    }
+})
