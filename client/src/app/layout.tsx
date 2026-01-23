@@ -29,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="scrollbar-none" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${oxanium.variable} ${geistMono.variable} antialiased`}
       >

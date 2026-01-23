@@ -1,6 +1,10 @@
+"use client";
+
 import { Card, CardDescription, CardHeader, CardTitle } from "./card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./carousel";
 import { Avatar,AvatarFallback } from "./avatar";
+import { useRef } from "react";
+import Autoplay from "embla-carousel-autoplay";
 
 export const testimonials = [
   {
@@ -64,10 +68,16 @@ export const testimonials = [
 
 
 export function Testimonials(){
-    return <section className="py-16">
-        <h4 className="text-3xl sm:text-4xl md:text-5xl text-center">Our Testimonials</h4>
+    const autoplay= useRef(Autoplay({
+        delay:2500,
+        stopOnInteraction:false,
+        stopOnMouseEnter:true
+
+    }))
+    return <section className="pb-16 pt-20">
+        <h4 className="text-3xl sm:text-4xl md:text-5xl text-center font-semibold">Our <span className="bg-primary text-primary-foreground py-1">Testimonials</span></h4>
         <div className="mt-6 sm:mt-8 md:mt-10 px-4">
-            <Carousel className="w-full max-w-240 mx-auto">
+            <Carousel opts={{loop:true,align:"start"}} plugins={[autoplay.current]} className="w-full max-w-240 mx-auto">
                 <CarouselContent>
                     {testimonials.map((testimonial)=>(
                         <CarouselItem className="sm:basis-1/2 md:basis-1/3" key={testimonial.id} >
@@ -79,7 +89,7 @@ export function Testimonials(){
                                     </Avatar>
                                         {testimonial.name}
                                 </CardTitle>
-                                <CardDescription>{testimonial.handle}</CardDescription>
+                                <CardDescription className="">{testimonial.handle}</CardDescription>
                             </CardHeader>
                             <div className="px-5">
                                 {testimonial.tweet}
