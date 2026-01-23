@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
+    const router=useRouter();
   return (
     <main className="relative h-dvh flex justify-center items-center overflow-hidden">
       <div 
@@ -16,7 +18,7 @@ export default function SignInPage() {
       />
 
       <div className="fixed top-4 left-4 sm:left-8 z-10">
-        <h1 className="text-2xl font-bold text-primary">Vector Talk</h1>
+        <h1 onClick={()=>router.push("/")} className="text-2xl font-bold text-primary cursor-pointer">Vector Talk</h1>
       </div>
 
       <Card className="w-full max-w-md mx-4 border-2 shadow-2xl relative overflow-hidden">

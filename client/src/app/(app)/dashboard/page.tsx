@@ -2,6 +2,9 @@ import { fetchAllFiles } from "@/app/actions/fileActions";
 import { DocumentsList } from "@/components/ui/documentsList";
 import { NewChatButton } from "@/components/ui/newChatButton";
 import { PreviousChats } from "@/components/ui/previousChats";
+import { ProUpgradeCard } from "@/components/ui/proUpgradeCard";
+import { UsageStatsCard } from "@/components/ui/usageStatisticsCard";
+
 
 export default async function Dashboard(){
 
@@ -10,18 +13,8 @@ export default async function Dashboard(){
     
     return <main className="flex-1 flex flex-col h-full rounded-lg overflow-clip">
         <div className="grid md:grid-cols-2 rounded-lg overflow-clip border mt-4">
-            <div className="text-secondary-foreground py-3 px-2 ">
-            <h2 className="text-lg font-semibold text-center ">Usage Statistics</h2>
-            <ul className="font-light pt-3">
-                <li>Active chats: 3 </li>
-                <li>Documents uploaded: 12</li>
-                <li>Knowledge chunks indexed: 1,248</li>
-                <li>Last activity: 2 hours ago</li>
-            </ul>
-        </div>
-        <div className="bg-accent text-primary-foreground">
-            {/* something to show here in big screens */}
-        </div>
+            <UsageStatsCard/>
+            <ProUpgradeCard/>
         </div>
         
         {/* new chat button */}

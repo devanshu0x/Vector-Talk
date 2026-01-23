@@ -27,7 +27,7 @@ export function Navbar(){
         <div className="flex items-center gap-2">
             <ThemeSwitcher/>
             {(session.status==="loading") ? <Skeleton className="h-9 w-18" />:
-            (session.status==="unauthenticated") && <Button>Sign In</Button>}
+            (session.status==="unauthenticated") && <Button onClick={()=>router.push("/sign-in")} >Sign In</Button>}
             {
                 session.status==="authenticated" && 
                 <AlertDialog>

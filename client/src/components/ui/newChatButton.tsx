@@ -40,7 +40,7 @@ export const NewChatButton=()=>{
         }
     }
 
-    return <div className="flex flex-col md:flex-row-reverse gap-2">
+    return <div className="flex flex-col md:flex-row-reverse gap-4 md:gap-8">
         <Dialog>
             <DialogTrigger asChild>
                 <Button className="w-full flex-1">
