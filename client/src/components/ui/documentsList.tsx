@@ -8,15 +8,17 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "./skeleton";
 import axios from "axios";
 import { toast } from "sonner";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./alert-dialog";
 
 
 interface ListItemProps{
     fileName:string;
     fileId:string;
-    userId:string
+    userId:string;
+    removeDocument: (fileId:string)=>void;
 }
 
-function ListItem({fileName,fileId,userId}:ListItemProps){
+function ListItem({fileName,fileId,userId,removeDocument}:ListItemProps){
     const [isDeleting,setIsDeleting]=useState<boolean>(false);
     const deleteHandler=async ()=>{
         if(isDeleting){
@@ -25,6 +27,7 @@ function ListItem({fileName,fileId,userId}:ListItemProps){
         setIsDeleting(true)
         try{
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/${userId}/file/${fileId}`)
+            removeDocument(fileId);
         }catch(err){
             toast.error("Failed deleting file");
         }
@@ -38,22 +41,43 @@ function ListItem({fileName,fileId,userId}:ListItemProps){
             {fileName}{isDeleting && <span className="text-red-500"> Deleting...</span>}
         </div>
         <div className="flex gap-2 sm:gap-3 md:gap-4">
-            <Trash2  onClick={deleteHandler} size={18} className="hover:text-red-400 transition-colors duration-300" />
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Trash2   size={18} className="hover:text-red-400 transition-colors duration-300" />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>Do you really want to delete file <span className="text-red-500">{fileName}</span>? This action cannot be undone</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction variant={"destructive"} onClick={deleteHandler} disabled={isDeleting} >{isDeleting? "Deleting...": "Delete"}</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
             <DownloadIcon onClick={()=>window.location.href=`${process.env.NEXT_PUBLIC_API_URL}/${userId}/download/${fileId}`} size={18} className="hover:text-green-400 transition-colors duration-300" />
         </div>
       </div>
 }
 
-interface DocumentListProps{
-    documentList:{
+interface Document{
         fileId:string;
         fileName:string;
         fileNameInDb:string;
-    }[];
+};
+
+interface DocumentListProps{
+    documentList:Document[];
     
 }
 
+
 export function DocumentsList({documentList}:DocumentListProps){
+    const [documents,setDocuments]=useState<Document[]>(documentList);
+    const removeDocument=(fileId:string)=>{
+        setDocuments(documents.filter((doc)=>doc.fileId!==fileId));
+    }
 
     const session= useSession();
     const [open,setOpen]=useState<boolean>(false);
@@ -69,24 +93,24 @@ export function DocumentsList({documentList}:DocumentListProps){
         <h2 className="text-center font-semibold text-lg mt-2 sm:mt-1">Documnets Uploaded</h2>
         <Collapsible open={open} onOpenChange={setOpen} className="mt-4 sm:mt-6 w-full mx-auto">
             {
-                documentList.length===0 ? <div className="min-h-30 flex flex-col gap-2 justify-center items-center opacity-60">
+                documents.length===0 ? <div className="min-h-30 flex flex-col gap-2 justify-center items-center opacity-60">
                     <FileText size={32}/>
                     <h6>Upload files in chat first to see them here</h6>
                 </div>: <div className="flex flex-col gap-2">
-                {documentList.slice(0,3).map((document)=>(
-                    <ListItem userId={session.data.user.id} fileId={document.fileId} fileName={document.fileName} key={document.fileId} />
+                {documents.slice(0,3).map((document)=>(
+                    <ListItem removeDocument={removeDocument}  userId={session.data.user.id} fileId={document.fileId} fileName={document.fileName} key={document.fileId} />
                 ))}
             </div>
             }
             <CollapsibleContent>
                 <div className="flex flex-col gap-2 mt-2">
-                {documentList.slice(3).map((document)=>(
-                    <ListItem userId={session.data.user.id} fileId={document.fileId} fileName={document.fileName} key={document.fileId} />
+                {documents.slice(3).map((document)=>(
+                    <ListItem removeDocument={removeDocument} userId={session.data.user.id} fileId={document.fileId} fileName={document.fileName} key={document.fileId} />
                 ))}
             </div>
             </CollapsibleContent>
             {
-                documentList.length>3 && <CollapsibleTrigger className="my-4" asChild>
+                documents.length>3 && <CollapsibleTrigger className="my-4" asChild>
                 <Button variant={ "secondary"} className="w-full">
                     {open? "Show Less": "Show More"}
                 </Button>
