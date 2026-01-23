@@ -1,4 +1,5 @@
 import { Features } from "@/components/ui/features";
+import { Footer } from "@/components/ui/footer";
 import { LandingPageButton } from "@/components/ui/landingPageButton";
 import { Navbar } from "@/components/ui/navbar";
 import { Testimonials } from "@/components/ui/testimonials";
@@ -12,7 +13,7 @@ export default function Home() {
     <div className="px-4 sm:px-10 pt-18">
       {/* hero */}
       <div className="grid sm:grid-cols-10">
-        <h1 className="text-7xl md:text-8xl lg:text-9xl capitalize col-span-7 font-extrabold tracking-tight leading-tight text-primary" >Search files <span style={{ WebkitTextStroke: "2px var(--primary)", color: "transparent" }}>like never <span className="bg-primary text-background/90">before</span></span></h1>
+        <h1 className="text-7xl md:text-8xl lg:text-9xl capitalize col-span-7 font-extrabold tracking-tight leading-tight text-primary animate-fade-in-up " >Search files <span style={{ WebkitTextStroke: "2px var(--primary)", color: "transparent"}}>like never <span className="bg-primary text-background/90">before</span></span></h1>
         <div className="hidden sm:block col-span-3">
           <div className="h-full bg-primary text-background rounded-xl rotate-3 hover:rotate-0 transition-all duration-300 shadow-xl p-5 md:p-6 flex flex-col justify-between">
             <div className="space-y-5">
@@ -63,6 +64,8 @@ export default function Home() {
       <Features/>
 
       {/* something like start using it now */}
+      <Footer/>
+
 
     </div>
   </main>

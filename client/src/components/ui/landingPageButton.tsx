@@ -1,10 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button } from "./button";
 
 export function LandingPageButton(){
     const router=useRouter();
     return <div>
-        <Button variant={"secondary"} className="text-xl w-full border font-heading" onClick={()=>router.push("/dashboard")}>Try Now!</Button>
+        <button  className="text-xl w-full border bg-primary text-primary-foreground rounded-lg py-2 border-primary-foreground font-heading hover:scale-105 hover:bg-accent/10 font-bold transition-all duration-300" onClick={()=>router.push("/dashboard")}>Try Now!</button>
     </div>
-}
+} 
