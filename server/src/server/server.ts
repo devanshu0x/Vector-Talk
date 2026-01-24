@@ -105,10 +105,10 @@ app.post("/query", async (req, res) => {
 
 
         await prisma.message.create({
-            data:{
+            data: {
                 chatId,
-                role:"USER",
-                content:query
+                role: "USER",
+                content: query
             }
         })
 
@@ -132,13 +132,27 @@ app.post("/query", async (req, res) => {
 
         const context = similaritySearchResult.map((doc, idx) => `Source ${idx + 1}:\n${doc.pageContent}`).join("\n\n");
 
-        const result = await llm.invoke(prompt(context, query));
+        const historyDesc = await prisma.message.findMany({
+            where: { chatId },
+            orderBy: { createdAt: "desc" },
+            take: 8,
+        });
+        const history = historyDesc.reverse();
+        const chatHistory = history
+            .map(m =>
+                m.role === "USER"
+                    ? `User: ${m.content}`
+                    : `Assistant: ${m.content}`
+            )
+            .join("\n");
+
+        const result = await llm.invoke(prompt(context, query, chatHistory));
 
         await prisma.message.create({
-            data:{
+            data: {
                 chatId,
-                role:"ASSISTANT",
-                content:result.content as string
+                role: "ASSISTANT",
+                content: result.content as string
             }
         })
 
@@ -205,7 +219,7 @@ app.delete("/:userId/file/:fileId", async (req, res) => {
     try {
         const { userId } = req.params;
         const { fileId } = req.params;
-        console.log(userId,fileId);
+        console.log(userId, fileId);
         if (!userId || !fileId) {
             res.status(400).json({
                 message: "Invalid parameters"
@@ -223,15 +237,15 @@ app.delete("/:userId/file/:fileId", async (req, res) => {
             return res.status(404).json({ message: "File not found" });
         }
 
-       const fileDB= await prisma.$transaction(async (tx)=>{
+        const fileDB = await prisma.$transaction(async (tx) => {
             await tx.chatFile.deleteMany({
-                where:{
+                where: {
                     fileId
                 }
             });
 
-            const file=await tx.file.delete({
-                where:{
+            const file = await tx.file.delete({
+                where: {
                     fileId
                 }
             });
@@ -239,16 +253,16 @@ app.delete("/:userId/file/:fileId", async (req, res) => {
         })
 
         await deletionQueue.add("file-deletion-queue",
-            {fileId,fileNameInDb:fileDB.fileNameInDb}
+            { fileId, fileNameInDb: fileDB.fileNameInDb }
         )
 
         return res.json({
-            message:"Deleted files successfully"
+            message: "Deleted files successfully"
         })
 
     } catch (err) {
-        console.error("Failed to delete file",err);
-        return res.status(500).json({message:"Failed to delete file"})
+        console.error("Failed to delete file", err);
+        return res.status(500).json({ message: "Failed to delete file" })
     }
 })
 

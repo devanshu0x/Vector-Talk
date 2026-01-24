@@ -26,18 +26,30 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [loadingPrev,setLoadingPrev]=useState<boolean>(false);
     const bottomRef=useRef<HTMLDivElement | null>(null);
+    const fetchingRef = useRef(false);
+    const initialLoadRef = useRef(true);
+
 
     async function fetchMessages(){
-      if(!hasMore || loadingPrev) return;
+      if(!hasMore || fetchingRef.current) return;
+
+      fetchingRef.current = true;
       setLoadingPrev(true)
       try{
         const res=await getMessages(chatId,cursor);
-        setMessages(prev=>[...(res.messages),...prev])
+        console.log(res);
+        setMessages(prev => {
+          const seen = new Set(prev.map(m => m.messageId));
+          const fresh = res.messages.filter(m => !seen.has(m.messageId));
+          return [...fresh, ...prev];
+        });
+
         setCursor(res.nextCursor);
         setHasMore(res.nextCursor!==null);
       }catch(err){
         toast.error("Failed to fetch previous messages")
       }finally{
+        fetchingRef.current = false;
         setLoadingPrev(false);
       }
     }
@@ -49,6 +61,14 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
     useEffect(()=>{
       fetchMessages();
     },[])
+
+    useEffect(() => {
+      if (initialLoadRef.current && messages.length > 0) {
+      bottomRef.current?.scrollIntoView({ behavior: "auto" });
+      initialLoadRef.current = false;
+    }
+    }, [messages]);
+
 
     async function sendQuery(){
         if(!query.trim()) return ;
@@ -80,7 +100,7 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
     return <div className="flex grow flex-col w-full h-full overflow-hidden">
      
       <div onScroll={(e)=>{
-        if(e.currentTarget.scrollTop===0){
+        if(e.currentTarget.scrollTop<40){
           fetchMessages();
         }
       }} className="flex-1 flex flex-col w-full  overflow-y-auto scrollbar-none px-4 pt-3 pb-15 space-y-3">
