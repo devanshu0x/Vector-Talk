@@ -130,6 +130,7 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
         <div ref={bottomRef} />
       </div>
         <QueryInputArea
+          loading={loading}
           sendQuery={sendQuery}
           query={query}
           setQuery={setQuery}
