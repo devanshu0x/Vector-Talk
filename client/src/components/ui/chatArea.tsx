@@ -1,9 +1,11 @@
 "use client"
 
-import { FileText } from "lucide-react"
+import { ArrowUp, Divide, FileText, Loader2 } from "lucide-react"
 import { QueryInputArea } from "./queryInputArea"
 import { useEffect, useRef, useState } from "react"
 import axios from "axios";
+import { toast } from "sonner";
+import { getMessages } from "@/app/actions/messageActions";
 
 interface ChatAreaProps{
     userId:string;
@@ -11,25 +13,47 @@ interface ChatAreaProps{
 }
 
 interface Message {
-  role: "user" | "assistant";
+  role: "USER" | "ASSISTANT";
   content: string;
+  messageId?:string;
 };
 
 export function ChatArea({userId,chatId}:ChatAreaProps) {
     const [query,setQuery]=useState<string>("");
     const [messages,setMessages]=useState<Message[]>([]);
     const [loading,setLoading]=useState<boolean>(false);
-
+    const [cursor, setCursor] = useState<string | null>(null);
+    const [hasMore, setHasMore] = useState<boolean>(true);
+    const [loadingPrev,setLoadingPrev]=useState<boolean>(false);
     const bottomRef=useRef<HTMLDivElement | null>(null);
+
+    async function fetchMessages(){
+      if(!hasMore || loadingPrev) return;
+      setLoadingPrev(true)
+      try{
+        const res=await getMessages(chatId,cursor);
+        setMessages(prev=>[...(res.messages),...prev])
+        setCursor(res.nextCursor);
+        setHasMore(res.nextCursor!==null);
+      }catch(err){
+        toast.error("Failed to fetch previous messages")
+      }finally{
+        setLoadingPrev(false);
+      }
+    }
 
     useEffect(()=>{
       bottomRef.current?.scrollIntoView({behavior:"smooth"})
-    },[loading,messages])
+    },[loading])
+
+    useEffect(()=>{
+      fetchMessages();
+    },[])
 
     async function sendQuery(){
         if(!query.trim()) return ;
         
-        const userMessage:Message={role:"user", content:query.trim()};
+        const userMessage:Message={role:"USER", content:query.trim()};
         setMessages((prev) => ([...prev,userMessage]));
         setQuery("");
         setLoading(true);
@@ -40,13 +64,13 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
             userId,
             chatId});
             
-            const assistantMessage:Message={role:"assistant",content:res.data.answer};
+            const assistantMessage:Message={role:"ASSISTANT",content:res.data.answer};
             setMessages((prev)=>[
                 ...prev,
                 assistantMessage
             ])
         }catch(err){
-            const assistantMessage:Message= {role:"assistant" , content:"Something went wrong."};
+            const assistantMessage:Message= {role:"ASSISTANT" , content:"Something went wrong."};
             setMessages(prev=>[...prev,assistantMessage]);
         }finally{
             setLoading(false);
@@ -55,7 +79,18 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
 
     return <div className="flex grow flex-col w-full h-full overflow-hidden">
      
-      <div className="flex-1 flex flex-col w-full  overflow-y-auto scrollbar-none px-4 pt-3 pb-15 space-y-3">
+      <div onScroll={(e)=>{
+        if(e.currentTarget.scrollTop===0){
+          fetchMessages();
+        }
+      }} className="flex-1 flex flex-col w-full  overflow-y-auto scrollbar-none px-4 pt-3 pb-15 space-y-3">
+        {loadingPrev ? <div className="flex justify-center">
+          <Loader2 className="animate-spin opacity-60" />
+        </div> :
+        hasMore && <div className="flex justify-center">
+          <ArrowUp className="opacity-60" />
+        </div>
+        }
         {messages.length === 0 && (
           <div className="h-full grow flex flex-col  items-center justify-center text-muted-foreground">
             <FileText size={28} />
@@ -87,7 +122,7 @@ export function ChatArea({userId,chatId}:ChatAreaProps) {
 
 function ChatBubble({role,content}:Message){
     return <div className={`max-w-3/4 rounded-lg px-4 py-2 text-sm leading-relaxed
-        ${role==="user"
+        ${role==="USER"
           ? "ml-auto bg-primary/70 text-primary-foreground"
           : "mr-auto bg-muted text-foreground"}
       `}>

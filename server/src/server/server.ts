@@ -103,6 +103,15 @@ app.post("/query", async (req, res) => {
             });
         }
 
+
+        await prisma.message.create({
+            data:{
+                chatId,
+                role:"USER",
+                content:query
+            }
+        })
+
         const files = chat.files.map((item) => {
             return item.fileId;
         });
@@ -124,6 +133,14 @@ app.post("/query", async (req, res) => {
         const context = similaritySearchResult.map((doc, idx) => `Source ${idx + 1}:\n${doc.pageContent}`).join("\n\n");
 
         const result = await llm.invoke(prompt(context, query));
+
+        await prisma.message.create({
+            data:{
+                chatId,
+                role:"ASSISTANT",
+                content:result.content as string
+            }
+        })
 
         res.json({
             answer: result.content

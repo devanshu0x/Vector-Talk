@@ -27,6 +27,7 @@ model Chat{
   user User @relation(fields: [userId],references: [id])
   files ChatFile[]
   createdAt DateTime @default(now())
+  messages Message[]
 }
 
 model ChatFile{
@@ -48,6 +49,21 @@ model File{
   createdAt DateTime @default(now())
 }
 
+model Message{
+  messageId String @id @default(uuid())
+  chatId String
+  role MessageRole
+  content String
+  createdAt DateTime @default(now())
+  chat Chat @relation(fields: [chatId],references: [chatId])
+
+  @@index([chatId,createdAt])
+}
+
+enum MessageRole{
+  USER 
+  ASSISTANT
+}
 
 enum FileStatus{
   UPLOADED

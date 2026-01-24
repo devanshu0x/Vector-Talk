@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client"
@@ -12,7 +7,6 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-
 
 model User{
   id String @id @default(uuid())
@@ -33,6 +27,7 @@ model Chat{
   user User @relation(fields: [userId],references: [id])
   files ChatFile[]
   createdAt DateTime @default(now())
+  messages Message[]
 }
 
 model ChatFile{
@@ -54,6 +49,21 @@ model File{
   createdAt DateTime @default(now())
 }
 
+model Message{
+  messageId String @id @default(uuid())
+  chatId String
+  role MessageRole
+  content String
+  createdAt DateTime @default(now())
+  chat Chat @relation(fields: [chatId],references: [chatId])
+
+  @@index([chatId,createdAt])
+}
+
+enum MessageRole{
+  USER 
+  ASSISTANT
+}
 
 enum FileStatus{
   UPLOADED
