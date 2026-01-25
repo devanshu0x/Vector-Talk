@@ -1,6 +1,6 @@
+import "dotenv/config"
 import express from "express";
 import cors from "cors"
-import "dotenv/config"
 import { upload } from "../config/multerConfig.js";
 import { deletionQueue, queue, type FileUploadQueue } from "../config/bullmqConfig.js";
 import cookieParser from "cookie-parser";

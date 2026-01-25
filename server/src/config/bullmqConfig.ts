@@ -9,8 +9,9 @@ export interface FileUploadQueue{
 
 export const queue= new Queue<FileUploadQueue>("file-upload-queue",{
     connection:{
-        host:"localhost",
-        port:6379
+        host:process.env.REDIS_HOST!,
+        port:parseInt(process.env.REDIS_PORT!),
+        password:process.env.REDIS_PASSWORD!
     }
 });
 
@@ -21,8 +22,9 @@ export interface FileDeletionQueue{
 }
 
 export const deletionQueue= new Queue<FileDeletionQueue>("file-deletion-queue",{
-    connection:{
-        host:"localhost",
-        port:6379
+     connection:{
+        host:process.env.REDIS_HOST!,
+        port:parseInt(process.env.REDIS_PORT!),
+        password:process.env.REDIS_PASSWORD!
     }
 })
