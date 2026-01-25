@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { fetchPrevChats } from "@/app/actions/chatActions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { format } from "date-fns";
 
 function trimTitle(title: string, len: number) {
     if (title.length <= len) return title;
@@ -62,7 +63,7 @@ export function PreviousChats() {
 
                     <div className="flex gap-4">
                         <div className="text-sm font-extralight">
-                            Started on :{chat.createdAt.toDateString()}
+                            Started on :{format(chat.createdAt,"do LLL yyyy")}
                         </div>
                         <div className=" hidden sm:flex gap-2">
                             {

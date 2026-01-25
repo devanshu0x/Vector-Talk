@@ -84,13 +84,13 @@ export function DocumentsList({documentList}:DocumentListProps){
     
     if(session.status!=="authenticated"){
         return <div>
-            <h2 className="text-center font-semibold text-lg mt-2 sm:mt-1">Documnets Uploaded</h2>
+            <h2 className="text-center font-semibold text-lg mt-2 sm:mt-1">Documents Uploaded</h2>
             <Skeleton className="w-full h-40 mt-5" />
         </div>
     }
 
     return <div>
-        <h2 className="text-center font-semibold text-lg mt-2 sm:mt-1">Documnets Uploaded</h2>
+        <h2 className="text-center font-semibold text-lg mt-2 sm:mt-1">Documents Uploaded</h2>
         <Collapsible open={open} onOpenChange={setOpen} className="mt-4 sm:mt-6 w-full mx-auto">
             {
                 documents.length===0 ? <div className="min-h-30 flex flex-col gap-2 justify-center items-center opacity-60">
